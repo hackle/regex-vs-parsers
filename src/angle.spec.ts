@@ -1,8 +1,8 @@
 import P from 'parsimmon';
 
-// <"age".21; "greeting"."hello"; "from".<"street"."Queen St."; "number": 543>>
+// <"age".21; "name"."Chris"; "from".<"street"."Queen St."; "number": 543>>
 // 21
-// "greeting"
+// "name"
 type Angle = number | string | [k: string, v: Angle][];
 function toObj(agl: Angle): any {
     if (Array.isArray(agl)) {
@@ -48,8 +48,9 @@ describe('angle parser', () => {
         '1': 1,
         '"foo"': "foo",
         '<"age".21>': { age: 21 },
-        '<"age".21; "greeting"."hello"; "from".<"street"."Queen St."; "number".543>>':
-            { age: 21, greeting: "hello", from: { street: "Queen St.", number: 543 } }
+        '<"<age>".21>': { '<age>': 21 },
+        '<"age".21; "name"."Chris"; "from".<"street"."Queen St."; "number".543>>':
+            { age: 21, name: "Chris", from: { street: "Queen St.", number: 543 } }
     };
 
     const negatives: any[] = [

@@ -1,6 +1,6 @@
 import { Mode } from "./modes";
 
-const regex = / /;
+const regex = /^ $/;
 
 export function parseIt(url: string): Mode | null {
     const match = regex.exec(url);

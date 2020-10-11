@@ -1,12 +1,12 @@
 import P from 'parsimmon';
 
-// <"age".21; "name"."Chris"; "from".<"street"."Queen St."; "number": 543>>
+// <"age".21; "name"."Chris"; "from".<"street"."Queen St."; "number". 543>>
 // 21
 // "name"
 type Angle = number | string | [k: string, v: Angle][];
-function toObj(agl: Angle): any {
+function angleToObj(agl: Angle): any {
     if (Array.isArray(agl)) {
-        return agl.reduce((obj, [k, v]) => ({ ...obj, [k]: toObj(v) }), {});
+        return agl.reduce((obj, [k, v]) => ({ ...obj, [k]: angleToObj(v) }), {});
     }
 
     return agl;
@@ -26,7 +26,7 @@ const obj =
         P.string('<')
          .then(kvp(a).sepBy1(P.string(';').then(P.optWhitespace)))
          .skip(P.string('>'))
-         .map(toObj);
+         .map(angleToObj);
 
 const angle: P.Parser<any> = 
     P.lazy(() => P.alt(

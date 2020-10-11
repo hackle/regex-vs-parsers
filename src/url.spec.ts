@@ -14,6 +14,7 @@ const negatives = [
     '/book//',
     '/book123',
     '/bookclone',
+    '/book/clone',
     '/book123clone',
     '/book123/clone'
 ];

@@ -4,8 +4,8 @@ import { Mode } from './modes';
 
 const slash = P.string('/');
 
-const bookId = guid; 
-// const bookId = P.digit.atLeast(1).tie();
+// const bookId = guid; 
+const bookId = P.digit.atLeast(1).tie();
 const edit = slash.then(bookId);
 const clone = edit.skip(slash).skip(P.string('clone'));
 

@@ -1,12 +1,12 @@
 import { Mode } from './modes';
-import { parseIt } from './parsing';
+import { parseIt } from './url-parser';
 
 const positives: Record<string, Mode> = {
-    '/book': { mode: 'create' },
-    '/book/': { mode: 'create' },
-    '/book/123': { mode: 'edit', id: '123' },
-    '/book/123/': { mode: 'edit', id: '123' },
-    '/book/123/clone': { mode: 'clone', id: '123' },
+    '/book':            { mode: 'create' },
+    '/book/':           { mode: 'create' },
+    '/book/123':        { mode: 'edit', id: '123' },
+    '/book/123/':       { mode: 'edit', id: '123' },
+    '/book/123/clone':  { mode: 'clone', id: '123' },
     '/book/123/clone/': { mode: 'clone', id: '123' }
 };
 

@@ -22,7 +22,7 @@ const arithmetic =
         number,
         operation,
         number
-    ).map(([n1, fn, n2]) => fn(n1, n2));
+    ).map(([n1, op, n2]) => op(n1, n2));
 
 function calc(raw: string): number | null {
     const result = arithmetic.parse(raw);

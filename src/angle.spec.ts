@@ -1,6 +1,6 @@
 import P from 'parsimmon';
 
-// <"age".21; "name"."Chris"; "from".<"street"."Queen St."; "number": 543>>
+// <"age".21; "name"."Chris"; "from".<"street"."Queen St."; "number". 543>>
 // 21
 // "name"
 type Angle = number | string | [k: string, v: Angle][];

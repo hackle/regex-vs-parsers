@@ -3,7 +3,8 @@ import P from 'parsimmon';
 // <"age".21; "name"."Chris"; "from".<"street"."Queen St."; "number". 543>>
 // 21
 // "name"
-type Angle = number | string | [k: string, v: Angle][];
+type Entry = readonly [k: string, v: Angle];
+type Angle = number | string | Array<Entry>;
 function toObj(agl: Angle): any {
     if (Array.isArray(agl)) {
         return agl.reduce((obj, [k, v]) => ({ ...obj, [k]: toObj(v) }), {});
@@ -12,21 +13,22 @@ function toObj(agl: Angle): any {
     return agl;
 }
 
-const number = P.digit.atLeast(1).tie().map(Number);
-const quoted = P.string('"')
-                .then(P.takeWhile(c => c !== '"'))
-                .skip(P.string('"'));
+const number = P.digit.atLeast(1).map(cs => Number(cs.join('')));
+const quote = P.string('"');
+const quoted = P.takeWhile(c => c !== '"')
+                .wrap(quote, quote);
 
-const kvp = 
-    (a: P.Parser<any>) => 
-        P.seq(quoted.skip(P.string('.')), a);
+const kvp = (val: P.Parser<any>) => 
+                P.seq(quoted, P.string('.'), val)
+                .map(([k, _, v]) => [k, v] as const);
         
-const obj = 
-    (a: P.Parser<any>) =>
-        P.string('<')
-         .then(kvp(a).sepBy1(P.string(';').then(P.optWhitespace)))
-         .skip(P.string('>'))
-         .map(toObj);
+const separator = P.seq(P.string(';'), P.optWhitespace)
+                    .map(cs => cs.join(''));
+
+const obj = (val: P.Parser<any>) =>
+                kvp(val).sepBy1(separator)
+                .wrap(P.string('<'), P.string('>'))
+                .map(toObj);
 
 const angle: P.Parser<any> = 
     P.lazy(() => P.alt(

@@ -12,7 +12,10 @@ function getOperation(op: Operator): Operation {
     }[op];
 }
 
-const number = P.digit.atLeast(1).tie().map(Number);
+const number = P.digit
+                .atLeast(1)
+                .map(digits => Number(digits.join('')));
+                
 const operation = P.oneOf('+-*/')
                    .map(x => getOperation(x as Operator));
 

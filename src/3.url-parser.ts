@@ -1,11 +1,11 @@
 import * as P from 'parsimmon';
-import { guid } from './guid';
-import { Mode } from './modes';
+import { guid } from './7.guid';
+import { Mode } from './0.modes';
 
 const slash = P.string('/');
 
-const bookId = guid; 
-// const bookId = P.digit.atLeast(1).map(cs => cs.join(''));
+// const bookId = guid; 
+const bookId = P.digit.atLeast(1).map(cs => cs.join(''));
 const edit = P.seq(slash, bookId)
               .map(([s, b]) => b);
 
@@ -19,8 +19,7 @@ const urlParser: P.Parser<Mode> =
             edit.map<Mode>(id => ({ id, mode: 'edit' })),
             P.of<Mode>({ mode: 'create' })
         )
-    )
-    .skip(slash.or(P.of(null)));
+    );
 
 export function parseIt(url: string): Mode | null {
     const result = urlParser.parse(url);

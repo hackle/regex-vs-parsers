@@ -1,5 +1,5 @@
-import { Mode } from './modes';
-import { parseIt } from './url-parser';
+import { Mode } from './0.modes';
+import { parseIt } from './3.url-parser';
 
 const positives: Record<string, Mode> = {
     '/book': { mode: 'create' },

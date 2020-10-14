@@ -3,32 +3,62 @@ import P from 'parsimmon';
 type Operator = '+'|'-'|'*'|'/';
 type Operation = (n1: number, n2: number) => number;
 
-function getOperation(op: Operator): Operation {
-    return {
-        '+': (n1: number, n2: number) => n1 + n2,
-        '-': (n1: number, n2: number) => n1 - n2,
-        '*': (n1: number, n2: number) => n1 * n2,
-        '/': (n1: number, n2: number) => n1 / n2,
-    }[op];
+function toOperation(op: Operator): Operation {
+    switch (op) {
+        case '+': return (num1: number, num2: number) => num1 + num2;
+        case '-': return (num1: number, num2: number) => num1 - num2;
+        case '*': return (num1: number, num2: number) => num1 * num2;
+        case '/': return (num1: number, num2: number) => num1 / num2;
+    };
 }
 
-const number = P.digit.atLeast(1).tie().map(Number);
-const operation = P.oneOf('+-*/')
-                   .map(x => getOperation(x as Operator));
 
-// 12+34 
-const arithmetic = 
+
+
+
+const number: P.Parser<number> = 
+    P.digit
+    .atLeast(1)
+    .map(cs => Number(cs.join('')));
+
+
+
+
+
+
+const operation: P.Parser<Operation> = 
+    P.oneOf('+-*/')
+    .map(x => toOperation(x as Operator));
+
+
+
+
+
+
+const arithmetic: P.Parser<number> = 
     P.seq(
         number,
         operation,
         number
-    ).map(([n1, fn, n2]) => fn(n1, n2));
+    ).map(([n1, opFn, n2]) => opFn(n1, n2));
+
+
+
+
+
+
 
 function calc(raw: string): number | null {
     const result = arithmetic.parse(raw);
 
     return result.status ? result.value : null;
 }
+
+
+
+
+
+
 
 describe('Arithmetic', () => {
     const testcases: Record<string, number> = 

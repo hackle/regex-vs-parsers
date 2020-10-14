@@ -1,47 +1,107 @@
 type Result<T> = { value: T, rest: string };
 type Parser<T> = (raw: string) => Result<T> | null;
-
-const digitChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-
-const symbolChars = ['+', '-', '*', '/'];
 type OperationSymbol = '+' | '-' | '*' | '/';
 type Operation = (num1: number, num2: number) => number;
 
+
+
+
+
+
+
+
+
+
+
+const digitChars = '0123456789';
+const symbolChars = '+-*/';
+
+function symbol2Operation(op: OperationSymbol): Operation {
+    switch (op) {
+        case '+': return (num1: number, num2: number) => num1 + num2;
+        case '-': return (num1: number, num2: number) => num1 - num2;
+        case '*': return (num1: number, num2: number) => num1 * num2;
+        case '/': return (num1: number, num2: number) => num1 / num2;
+    };
+}
+
+
+
+
+// === the building blocks ===
+
+// the most basic parser: eats one character only
 const char: Parser<string> = function (raw: string) {
     if (raw == null || raw.length === 0) return null;
 
-    const fstChar = raw[0];
-    return fstChar == null 
-        ? null
-        : { value: fstChar, rest: raw.substr(1) };
+    return { value: raw[0], rest: raw.substr(1) };
 }
 
-function satisfies<T>(predicate: (t: T) => boolean, p: Parser<T>): Parser<T> {
-    return function (raw: string) {
-        const result = p(raw);
+
+
+
+
+
+function satisfies<T>(
+    predicate: (t: T) => boolean, 
+    parser1: Parser<T>
+    ): Parser<T> {
+
+    // intercepts the result of parser1, 
+    // and only returns the result if it satisfies the predicate
+    const parser2: Parser<T> = function (raw: string) {
+        const result = parser1(raw);
         if (result == null || !predicate(result.value)) return null;
 
         return result;
     };
+
+    return parser2;
 }
 
-function many<T>(p: Parser<T>): Parser<T[]> {
-    return function next(rest: string, values: T[] = []): Result<T[]> {
-        const result = p(rest);
+
+
+
+
+function many<T>(parser1: Parser<T>): Parser<T[]> {
+    
+    // keeps applying parser1 until it fails, 
+    // and puts the good results in an array
+    const parser2: Parser<T[]> = function next(rest: string, values: T[] = []): Result<T[]> {
+        const result = parser1(rest);
         if (result == null) return { rest, value: values };
 
         return next(result.rest, values.concat([ result.value ]));
     };
+
+    return parser2;
 }
 
-function map<T, U>(fn: (t: T) => U, p: Parser<T>): Parser<U> {
-    return (raw: string) => {
-        const result = p(raw);
+
+
+
+function map<T, U>(
+    mapFn: (t: T) => U, 
+    parser1: Parser<T>
+    ): Parser<U> {
+    
+    // converts the result of parser1 from type T to type U
+    const parser2: Parser<U> = function (raw: string) {
+        const result = parser1(raw);
         return result == null
             ? null
-            : { value: fn(result.value), rest: result.rest };
+            : { value: mapFn(result.value), rest: result.rest };
     };
+
+    return parser2;
 }
+
+
+
+
+
+// === composing the building blocks ===
+// guess what they are?
 
 const digit: Parser<string> = 
     satisfies(
@@ -49,11 +109,21 @@ const digit: Parser<string> =
         char
     );
 
+
+
+
+
+
 const digits: Parser<string[]> = 
     satisfies(
         (ds: string[]) => ds.length > 0, 
         many(digit)
     );
+
+
+
+
+
 
 const number: Parser<number> = 
     map(
@@ -61,11 +131,22 @@ const number: Parser<number> =
         digits
     );
 
+
+
+
+
+
 const symbol: Parser<string> =
     satisfies(
         (op: string) => symbolChars.includes(op),
         char
     );
+
+
+
+
+
+
 
 const operation: Parser<Operation> =
     map(
@@ -73,14 +154,11 @@ const operation: Parser<Operation> =
         symbol
     );
 
-function symbol2Operation(op: OperationSymbol): Operation {
-    return {
-        '+': (num1: number, num2: number) => num1 + num2,
-        '-': (num1: number, num2: number) => num1 - num2,
-        '*': (num1: number, num2: number) => num1 * num2,
-        '/': (num1: number, num2: number) => num1 / num2,
-    }[op];
-}
+
+
+
+
+    
 
 function evaluate(raw: string): number | null {
     const result1 = number(raw);
@@ -94,7 +172,14 @@ function evaluate(raw: string): number | null {
 
     return result2.value(result1.value, result3.value);
 }
-    
+
+
+
+
+
+
+
+
 describe('native parser', () => {
     const testcases: Record<string, number> = 
     {

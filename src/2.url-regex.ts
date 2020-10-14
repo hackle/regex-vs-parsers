@@ -4,7 +4,7 @@ const regex = {
     create:     /^\/book$/i,
     edit:       /^\/book(?:\/(\d+))?$/i,
     clone:      /^\/book\/(\d+)\/(clone)$/i,
-    catchAll:   /^\/book(?:(?:\/(\d+))(?:\/(clone))?)?$/i
+    catchAll:   /^\/book(?:\/(\d+)(?:\/(clone))?)?$/i
 };
 
 export function parseIt(url: string): Mode | null {

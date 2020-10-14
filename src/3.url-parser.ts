@@ -4,10 +4,9 @@ import { Mode } from './0.modes';
 
 // const bookId = guid; 
 const bookId = P.digit.atLeast(1).map(cs => cs.join(''));
-const slash = P.string('/');
 const create = P.string('/book');
-const edit = create.then(slash).then(bookId);
-const clone = edit.skip(slash).skip(P.string('clone'));
+const edit = create.then(P.string('/')).then(bookId);
+const clone = edit.skip(P.string('/clone'));
 
 const urlParser: P.Parser<Mode> = 
     P.alt(

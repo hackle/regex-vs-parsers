@@ -31,6 +31,7 @@ function symbol2Operation(op: OperationSymbol): Operation {
 // === the building blocks ===
 
 // the most basic parser: eats one character only
+// a parser is just a function, remember the rhyme?
 const char: Parser<string> = function (raw: string) {
     if (raw == null || raw.length === 0) return null;
 

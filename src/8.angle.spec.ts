@@ -43,7 +43,7 @@ const number: P.Parser<number> =
 
 const quote: P.Parser<string> = P.string('"');
 
-// disclaimer: escaped quotes note accounted for
+// disclaimer: escaped quotes not accounted for
 const quotedString: P.Parser<string> = 
     P.takeWhile(c => c !== '"')
     .wrap(quote, quote);
